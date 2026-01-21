@@ -6,6 +6,7 @@ import br.com.finance.ms_user.user.infra.persistence.UserEntity;
 import br.com.finance.ms_user.user.infra.persistence.UserJpaRepository;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 
 public class UserRepositoryJpa implements UserRepository {
@@ -19,13 +20,6 @@ public class UserRepositoryJpa implements UserRepository {
         this.mapper = mapper;
     }
 
-    @Override
-    public User registerUser(User user) {
-        UserEntity entity = mapper.toEntity(user);
-        UserEntity saved = jpaRepository.save(entity);
-        return mapper.toDomain(saved);
-    }
-
 
     @Override
     public List<User> getAllUser() {
@@ -36,23 +30,36 @@ public class UserRepositoryJpa implements UserRepository {
     }
 
     @Override
-    public User updateUser(String email, User user) {
-        UserEntity existing = jpaRepository.findByEmail(email);
-        if(existing != null){
-            UserEntity updated = mapper.toEntity(user);
-            updated.setId(existing.getId());
-            jpaRepository.save(updated);
-            return mapper.toDomain(updated);
-        }
-            return null;
-
+    public User save(User user) {
+        UserEntity entity = mapper.toEntity(user);
+        UserEntity saved = jpaRepository.save(entity);
+        return mapper.toDomain(saved);
     }
 
     @Override
-    public void deleteUser(String email) {
-        UserEntity entity = jpaRepository.findByEmail(email);
-        jpaRepository.deleteById(entity.getId());
+    public Optional<User> findById(UUID id) {
+        return jpaRepository.findById(id)
+                .map(mapper::toDomain);
+    }
 
+    @Override
+    public Optional<User> findByEmail(String email) {
+        return Optional.ofNullable(jpaRepository.findByEmail(email))
+                .map((mapper::toDomain));
+    }
+
+
+    @Override
+    public void deleteById(UUID id) {
+        if(!jpaRepository.existsById(id)){
+            throw new RuntimeException("Usuário não encontrado");
+        }
+        jpaRepository.deleteById(id);
+    }
+
+    @Override
+    public boolean existsById(UUID id) {
+        return jpaRepository.existsById(id);
     }
 
     @Override
@@ -60,10 +67,5 @@ public class UserRepositoryJpa implements UserRepository {
         return jpaRepository.existsByEmail(email);
     }
 
-    @Override
-    public User findByEmail(String email) {
-        return Optional.ofNullable(jpaRepository.findByEmail(email))
-                .map(mapper::toDomain)
-                .orElse(null);
-    }
+
 }

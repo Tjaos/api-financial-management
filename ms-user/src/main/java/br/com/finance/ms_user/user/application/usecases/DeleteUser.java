@@ -2,6 +2,8 @@ package br.com.finance.ms_user.user.application.usecases;
 
 import br.com.finance.ms_user.user.application.gateways.UserRepository;
 
+import java.util.UUID;
+
 public class DeleteUser {
     private final UserRepository userRepository;
 
@@ -10,7 +12,7 @@ public class DeleteUser {
         this.userRepository = userRepository;
     }
 
-    public void deleteUserByEmail(String email) {
-        userRepository.deleteUser(email);
+    public void deleteUserById(UUID id) {
+        userRepository.deleteById(id);
     }
 }

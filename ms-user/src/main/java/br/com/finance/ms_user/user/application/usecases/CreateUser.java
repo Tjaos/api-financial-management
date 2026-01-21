@@ -26,8 +26,7 @@ public class CreateUser {
                 user.getEmail(),
                 hashedPassword
         );
-
-        return userRepository.registerUser(userWithHashedPassword);
+        return userRepository.save(userWithHashedPassword);
     }
 }
 

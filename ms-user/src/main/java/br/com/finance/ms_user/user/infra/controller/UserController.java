@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/users")
@@ -45,20 +46,24 @@ public class UserController {
     }
 
     @GetMapping
-    public List<UserResponseDto> getAllUsers() {
-        return showUsers.findAllUsers().stream()
+    public ResponseEntity<List<UserResponseDto>> getAllUsers() {
+        List<UserResponseDto> users = showUsers.findAllUsers().stream()
                 .map(u-> new UserResponseDto(u.getId(), u.getName(), u.getEmail()))
                 .toList();
+
+        return ResponseEntity.ok(users);
     }
 
-    @PutMapping("/{email}")
+    @PutMapping("/{id}")
     public ResponseEntity<UserResponseDto> updateUser(
-            @PathVariable String email,
+            @PathVariable("id") UUID id,
             @RequestBody UserRequestDto userDto){
 
         User updated = updateUser.updateUser(
-                email,
-                new User(userDto.name(), userDto.email(), userDto.password())
+                id,
+                userDto.name(),
+                userDto.email(),
+                userDto.password()
         );
 
         UserResponseDto response = new UserResponseDto(
@@ -66,13 +71,13 @@ public class UserController {
                 updated.getName(),
                 updated.getEmail()
         );
-        return  ResponseEntity.status(HttpStatus.OK).body(response);
+        return  ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("/{email}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(
-            @PathVariable String email) {
-        deleteUser.deleteUserByEmail(email);
+            @PathVariable("id") UUID id) {
+        deleteUser.deleteUserById(id);
         return ResponseEntity.noContent().build();
     }
 }

@@ -6,4 +6,6 @@ import java.util.Optional;
 
 public interface TokenService {
     String generateToken(User user);
+    boolean isTokenValid(String token);
+    String getSubject(String token);
 }

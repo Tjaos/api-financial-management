@@ -18,15 +18,16 @@ public class LoginUser {
     }
 
     public String login(String email, String rawPassword) {
-        try{
-            User user = userRepository.findByEmail(email);
-            if(!passwordHasher.matches(rawPassword, user.getPassword())) {
-                throw new RuntimeException("Usuário ou senha incorretos");
-            }
-            return tokenService.generateToken(user);
-        }catch(Exception e){
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuário ou senha incorretos"));
+
+        if (!passwordHasher.matches(rawPassword, user.getPassword())) {
             throw new RuntimeException("Usuário ou senha incorretos");
         }
 
+
+        return tokenService.generateToken(user);
     }
+
+
 }

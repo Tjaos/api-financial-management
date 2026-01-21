@@ -1,9 +1,11 @@
 package br.com.finance.ms_user.user.infra.persistence;
 
+import br.com.finance.ms_user.user.domain.entities.user.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Getter

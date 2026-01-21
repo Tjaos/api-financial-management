@@ -27,8 +27,8 @@ public class UserConfig {
     }
 
     @Bean
-    UpdateUser updateUser(UserRepository userRepository) {
-        return new UpdateUser(userRepository);
+    UpdateUser updateUser(UserRepository userRepository, PasswordHasher passwordHasher) {
+        return new UpdateUser(userRepository, passwordHasher);
     }
 
     @Bean
@@ -52,11 +52,13 @@ public class UserConfig {
     }
 
     @Bean
-    TokenService tokenService(){
+    JwtTokenService jwtTokenService() {
         return new JwtTokenService(
-                "chave-secreta-exemplo-para-geracao-de-tokens-1234567890", 1000 * 60 * 60
+                "chave-secreta-exemplo-para-geracao-de-tokens-1234567890",
+                1000L * 60 * 60
         );
     }
+
 
     @Bean
     PasswordHasher passwordHasher(PasswordEncoder encoder) {
