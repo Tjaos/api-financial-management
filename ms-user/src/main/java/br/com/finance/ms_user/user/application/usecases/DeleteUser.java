@@ -1,6 +1,6 @@
-package br.com.finance.ms_user.User.application.usecases;
+package br.com.finance.ms_user.user.application.usecases;
 
-import br.com.finance.ms_user.User.application.gateways.UserRepository;
+import br.com.finance.ms_user.user.application.gateways.UserRepository;
 
 public class DeleteUser {
     private final UserRepository userRepository;
