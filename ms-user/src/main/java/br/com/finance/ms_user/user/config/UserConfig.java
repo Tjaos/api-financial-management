@@ -1,22 +1,24 @@
 package br.com.finance.ms_user.user.config;
 
+import br.com.finance.ms_user.user.application.gateways.PasswordHasher;
 import br.com.finance.ms_user.user.application.gateways.UserRepository;
-import br.com.finance.ms_user.user.application.usecases.CreateUser;
-import br.com.finance.ms_user.user.application.usecases.DeleteUser;
-import br.com.finance.ms_user.user.application.usecases.ShowUsers;
-import br.com.finance.ms_user.user.application.usecases.UpdateUser;
+import br.com.finance.ms_user.user.application.security.TokenService;
+import br.com.finance.ms_user.user.application.usecases.*;
+import br.com.finance.ms_user.user.infra.security.BCryptPasswordHasher;
 import br.com.finance.ms_user.user.infra.gateway.UserEntityMapper;
 import br.com.finance.ms_user.user.infra.gateway.UserRepositoryJpa;
 import br.com.finance.ms_user.user.infra.persistence.UserJpaRepository;
+import br.com.finance.ms_user.user.infra.security.JwtTokenService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 public class UserConfig {
 
     @Bean
-    CreateUser createUser(UserRepository userRepository) {
-        return new CreateUser(userRepository);
+    CreateUser createUser(UserRepository userRepository, PasswordHasher passwordHasher) {
+        return new CreateUser(userRepository, passwordHasher);
     }
 
     @Bean
@@ -40,7 +42,26 @@ public class UserConfig {
     }
 
     @Bean
-    UserRepositoryJpa userRepositoryJpa(UserJpaRepository jpaRepository, UserEntityMapper mapper) {
+    UserRepository userRepository(UserJpaRepository jpaRepository, UserEntityMapper mapper) {
         return new UserRepositoryJpa(jpaRepository, mapper);
     }
+
+    @Bean
+    LoginUser loginUser(UserRepository userRepository, PasswordHasher passwordHasher, TokenService tokenService) {
+        return new LoginUser(userRepository, passwordHasher, tokenService );
+    }
+
+    @Bean
+    TokenService tokenService(){
+        return new JwtTokenService(
+                "chave-secreta-exemplo-para-geracao-de-tokens-1234567890", 1000 * 60 * 60
+        );
+    }
+
+    @Bean
+    PasswordHasher passwordHasher(PasswordEncoder encoder) {
+        return new BCryptPasswordHasher(encoder);
+    }
+
+
 }

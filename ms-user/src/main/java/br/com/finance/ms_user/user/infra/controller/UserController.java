@@ -5,10 +5,11 @@ import br.com.finance.ms_user.user.application.usecases.DeleteUser;
 import br.com.finance.ms_user.user.application.usecases.ShowUsers;
 import br.com.finance.ms_user.user.application.usecases.UpdateUser;
 import br.com.finance.ms_user.user.domain.entities.user.User;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/users")
@@ -27,7 +28,7 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public UserDto createUser(@RequestBody UserDto userDto) {
+    public ResponseEntity<UserResponseDto> createUser(@RequestBody UserRequestDto userDto) {
         User newUser = createUser.createUser(
                 new User(
                         userDto.name(),
@@ -35,29 +36,43 @@ public class UserController {
                         userDto.password()
                 )
         );
-        return new UserDto(
+        UserResponseDto response = new UserResponseDto(
                 newUser.getId(),
                 newUser.getName(),
-                newUser.getEmail(),
-                newUser.getPassword()
+                newUser.getEmail()
         );
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping
-    public List<UserDto> getAllUsers() {
+    public List<UserResponseDto> getAllUsers() {
         return showUsers.findAllUsers().stream()
-                .map(u-> new UserDto(u.getId(), u.getName(), u.getEmail(), u.getPassword()))
-                .collect(Collectors.toList());
+                .map(u-> new UserResponseDto(u.getId(), u.getName(), u.getEmail()))
+                .toList();
     }
 
     @PutMapping("/{email}")
-    public UserDto updateUser(@PathVariable String email, @RequestBody UserDto userDto){
-        User updated = updateUser.updateUser(email, new User(userDto.id(), userDto.name(), userDto.email(), userDto.password()));
-        return new UserDto(updated.getId(), updated.getName(), updated.getEmail(), updated.getPassword());
+    public ResponseEntity<UserResponseDto> updateUser(
+            @PathVariable String email,
+            @RequestBody UserRequestDto userDto){
+
+        User updated = updateUser.updateUser(
+                email,
+                new User(userDto.name(), userDto.email(), userDto.password())
+        );
+
+        UserResponseDto response = new UserResponseDto(
+                updated.getId(),
+                updated.getName(),
+                updated.getEmail()
+        );
+        return  ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @DeleteMapping("/{email}")
-    public void deleteUser(@PathVariable String email) {
+    public ResponseEntity<Void> deleteUser(
+            @PathVariable String email) {
         deleteUser.deleteUserByEmail(email);
+        return ResponseEntity.noContent().build();
     }
 }

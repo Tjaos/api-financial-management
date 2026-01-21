@@ -4,11 +4,10 @@ import br.com.finance.ms_user.user.application.gateways.UserRepository;
 import br.com.finance.ms_user.user.domain.entities.user.User;
 import br.com.finance.ms_user.user.infra.persistence.UserEntity;
 import br.com.finance.ms_user.user.infra.persistence.UserJpaRepository;
-import org.springframework.stereotype.Component;
-
 import java.util.List;
+import java.util.Optional;
 
-@Component
+
 public class UserRepositoryJpa implements UserRepository {
 
     private final UserJpaRepository jpaRepository;
@@ -59,5 +58,12 @@ public class UserRepositoryJpa implements UserRepository {
     @Override
     public boolean existsByEmail(String email) {
         return jpaRepository.existsByEmail(email);
+    }
+
+    @Override
+    public User findByEmail(String email) {
+        return Optional.ofNullable(jpaRepository.findByEmail(email))
+                .map(mapper::toDomain)
+                .orElse(null);
     }
 }
