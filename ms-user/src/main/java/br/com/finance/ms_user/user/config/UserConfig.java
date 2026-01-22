@@ -3,6 +3,7 @@ package br.com.finance.ms_user.user.config;
 import br.com.finance.ms_user.user.application.gateways.PasswordHasher;
 import br.com.finance.ms_user.user.application.gateways.UserRepository;
 import br.com.finance.ms_user.user.application.security.TokenService;
+import br.com.finance.ms_user.user.application.services.UserSpreadsheetParser;
 import br.com.finance.ms_user.user.application.usecases.*;
 import br.com.finance.ms_user.user.infra.security.BCryptPasswordHasher;
 import br.com.finance.ms_user.user.infra.gateway.UserEntityMapper;
@@ -65,5 +66,16 @@ public class UserConfig {
         return new BCryptPasswordHasher(encoder);
     }
 
+
+
+    @Bean
+    BulkCreateUsers bulkCreateUsers(UserRepository userRepository, PasswordHasher passwordHasher, UserSpreadsheetParser spreadsheetParser) {
+        return new BulkCreateUsers(userRepository, passwordHasher, spreadsheetParser);
+    }
+
+    @Bean
+    UserSpreadsheetParser userSpreadsheetParser() {
+        return new UserSpreadsheetParser();
+    }
 
 }
