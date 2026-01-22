@@ -8,7 +8,7 @@ import java.util.UUID;
 
 public interface UserRepository {
 
-    List<User> getAllUser();
+    List<User> getUsers(int page, int size);
 
     User save(User user);
 

@@ -4,6 +4,8 @@ import br.com.finance.ms_user.user.application.gateways.UserRepository;
 import br.com.finance.ms_user.user.domain.entities.user.User;
 import br.com.finance.ms_user.user.infra.persistence.UserEntity;
 import br.com.finance.ms_user.user.infra.persistence.UserJpaRepository;
+import org.springframework.data.domain.PageRequest;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -22,8 +24,11 @@ public class UserRepositoryJpa implements UserRepository {
 
 
     @Override
-    public List<User> getAllUser() {
-        return jpaRepository.findAll()
+    public List<User> getUsers(int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+
+        return jpaRepository.findAll(pageRequest)
+                .getContent()
                 .stream()
                 .map(mapper::toDomain)
                 .toList();

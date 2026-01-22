@@ -46,11 +46,13 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<List<UserResponseDto>> getAllUsers() {
-        List<UserResponseDto> users = showUsers.findAllUsers().stream()
+    public ResponseEntity<List<UserResponseDto>> getUsers(
+            @RequestParam(name= "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "30") int size
+    ) {
+        List<UserResponseDto> users = showUsers.findUsers(page, size).stream()
                 .map(u-> new UserResponseDto(u.getId(), u.getName(), u.getEmail()))
                 .toList();
-
         return ResponseEntity.ok(users);
     }
 

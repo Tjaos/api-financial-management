@@ -13,7 +13,13 @@ public class ShowUsers {
         this.userRepository = userRepository;
     }
 
-    public List<User> findAllUsers() {
-        return this.userRepository.getAllUser();
+    public List<User> findUsers(int page, int size) {
+        if(page < 0 ){
+            page = 0;
+        }
+        if(size > 100 ){
+            size = 100;
+        }
+        return this.userRepository.getUsers(page, size);
     }
 }

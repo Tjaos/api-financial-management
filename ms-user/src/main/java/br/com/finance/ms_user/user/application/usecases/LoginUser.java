@@ -1,5 +1,6 @@
 package br.com.finance.ms_user.user.application.usecases;
 
+import br.com.finance.ms_user.user.application.exceptions.UserOrPasswordWrongException;
 import br.com.finance.ms_user.user.application.gateways.PasswordHasher;
 import br.com.finance.ms_user.user.application.gateways.UserRepository;
 import br.com.finance.ms_user.user.application.security.TokenService;
@@ -19,10 +20,10 @@ public class LoginUser {
 
     public String login(String email, String rawPassword) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Usuário ou senha incorretos"));
+                .orElseThrow(UserOrPasswordWrongException::new);
 
         if (!passwordHasher.matches(rawPassword, user.getPassword())) {
-            throw new RuntimeException("Usuário ou senha incorretos");
+            throw new UserOrPasswordWrongException();
         }
 
 
