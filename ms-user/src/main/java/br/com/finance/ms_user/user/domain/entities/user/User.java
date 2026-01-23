@@ -1,6 +1,7 @@
 package br.com.finance.ms_user.user.domain.entities.user;
 
 import br.com.finance.ms_user.user.domain.exceptions.EmailDoesNotBeNullOrEmptException;
+import br.com.finance.ms_user.user.domain.exceptions.InvalidPasswordSizeException;
 import br.com.finance.ms_user.user.domain.exceptions.NullOrBlankInputValuesException;
 import java.util.UUID;
 
@@ -14,6 +15,7 @@ public class User {
 
     public User(String name, String email, String password) {
         verifyInvalidValues(name, email, password);
+        verifyPasswordSize(password);
         this.id = UUID.randomUUID();
         this.name = name;
         this.email = email;
@@ -21,6 +23,7 @@ public class User {
     }
     public User(UUID id, String name, String email, String password) {
         verifyInvalidValues(name, email, password);
+        verifyPasswordSize(password);
         this.id = id;
         this.name = name;
         this.email = email;
@@ -46,12 +49,20 @@ public class User {
         if (password == null || password.isBlank()) {
             throw new NullOrBlankInputValuesException("Senha não pode ser nula ou vazia");
         }
+
+        verifyPasswordSize(password);
         this.password = password;
     }
 
     private static void verifyInvalidValues(String name, String email, String password) {
-        if(name == null || name.isBlank() || email == null || email.isBlank() || password == null || password.isBlank()){
+        if(name == null || name.isBlank() || email == null || email.isBlank() || password == null || password.isBlank()) {
             throw new NullOrBlankInputValuesException("Nome, email e senha não podem ser nulos ou vazios");
+        }
+    }
+
+    private static void verifyPasswordSize(String password) {
+        if(password.length() < 6) {
+            throw new InvalidPasswordSizeException();
         }
     }
 

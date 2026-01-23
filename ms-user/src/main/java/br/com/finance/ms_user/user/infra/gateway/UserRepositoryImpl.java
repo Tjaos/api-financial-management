@@ -1,6 +1,6 @@
 package br.com.finance.ms_user.user.infra.gateway;
 
-import br.com.finance.ms_user.user.application.gateways.UserRepository;
+import br.com.finance.ms_user.user.application.gateway.UserRepository;
 import br.com.finance.ms_user.user.domain.entities.user.User;
 import br.com.finance.ms_user.user.infra.persistence.UserEntity;
 import br.com.finance.ms_user.user.infra.persistence.UserJpaRepository;
@@ -11,13 +11,13 @@ import java.util.Optional;
 import java.util.UUID;
 
 
-public class UserRepositoryJpa implements UserRepository {
+public class UserRepositoryImpl implements UserRepository {
 
     private final UserJpaRepository jpaRepository;
     private final UserEntityMapper mapper;
 
 
-    public UserRepositoryJpa(UserJpaRepository jpaRepository, UserEntityMapper mapper) {
+    public UserRepositoryImpl(UserJpaRepository jpaRepository, UserEntityMapper mapper) {
         this.jpaRepository = jpaRepository;
         this.mapper = mapper;
     }

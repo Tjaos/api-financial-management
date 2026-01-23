@@ -1,4 +1,4 @@
-package br.com.finance.ms_user.user.application.gateways;
+package br.com.finance.ms_user.user.application.gateway;
 
 import br.com.finance.ms_user.user.domain.entities.user.User;
 

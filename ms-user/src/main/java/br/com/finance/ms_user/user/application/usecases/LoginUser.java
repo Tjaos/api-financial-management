@@ -1,8 +1,8 @@
 package br.com.finance.ms_user.user.application.usecases;
 
 import br.com.finance.ms_user.user.application.exceptions.UserOrPasswordWrongException;
-import br.com.finance.ms_user.user.application.gateways.PasswordHasher;
-import br.com.finance.ms_user.user.application.gateways.UserRepository;
+import br.com.finance.ms_user.user.application.gateway.PasswordHasher;
+import br.com.finance.ms_user.user.application.gateway.UserRepository;
 import br.com.finance.ms_user.user.application.security.TokenService;
 import br.com.finance.ms_user.user.domain.entities.user.User;
 

@@ -1,6 +1,6 @@
 package br.com.finance.ms_user.user.infra.security;
 
-import br.com.finance.ms_user.user.application.gateways.PasswordHasher;
+import br.com.finance.ms_user.user.application.gateway.PasswordHasher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 public class BCryptPasswordHasher implements PasswordHasher {

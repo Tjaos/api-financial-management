@@ -1,6 +1,6 @@
 package br.com.finance.ms_user.user.application.usecases;
 
-import br.com.finance.ms_user.user.application.gateways.UserRepository;
+import br.com.finance.ms_user.user.application.gateway.UserRepository;
 import br.com.finance.ms_user.user.domain.entities.user.User;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

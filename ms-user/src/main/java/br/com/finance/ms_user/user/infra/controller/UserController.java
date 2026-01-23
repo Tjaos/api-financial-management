@@ -5,6 +5,9 @@ import br.com.finance.ms_user.user.application.usecases.DeleteUser;
 import br.com.finance.ms_user.user.application.usecases.ShowUsers;
 import br.com.finance.ms_user.user.application.usecases.UpdateUser;
 import br.com.finance.ms_user.user.domain.entities.user.User;
+import br.com.finance.ms_user.user.infra.dto.UserRequestDto;
+import br.com.finance.ms_user.user.infra.dto.UserResponseDto;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,7 +32,7 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<UserResponseDto> createUser(@RequestBody UserRequestDto userDto) {
+    public ResponseEntity<UserResponseDto> createUser(@Valid @RequestBody UserRequestDto userDto) {
         User newUser = createUser.createUser(
                 new User(
                         userDto.name(),

@@ -5,8 +5,6 @@ import br.com.finance.ms_user.user.domain.entities.user.User;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import jdk.swing.interop.SwingInterOpUtils;
-
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
@@ -30,6 +28,7 @@ public class JwtTokenService implements TokenService {
         return Jwts.builder()
                 .setIssuer("api-financial-management")
                 .setSubject(user.getEmail())
+                .claim("userId", user.getId().toString())
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
                 .signWith(key, SignatureAlgorithm.HS256)
@@ -43,10 +42,8 @@ public class JwtTokenService implements TokenService {
                     .setSigningKey(key)
                     .build()
                     .parseClaimsJws(token);
-            System.out.println("TOKEN VALIDO!");
             return true;
         } catch (Exception e) {
-            System.out.println("TOKEN INVALIDO: " + e.getMessage());
             return false;
         }
     }

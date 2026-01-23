@@ -1,6 +1,8 @@
 package br.com.finance.ms_user.user.infra.controller;
 
 import br.com.finance.ms_user.user.application.usecases.LoginUser;
+import br.com.finance.ms_user.user.infra.dto.LoginRequestDto;
+import br.com.finance.ms_user.user.infra.dto.LoginResponseDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

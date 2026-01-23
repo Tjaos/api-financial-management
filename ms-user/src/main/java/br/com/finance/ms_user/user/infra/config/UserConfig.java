@@ -1,13 +1,13 @@
-package br.com.finance.ms_user.user.config;
+package br.com.finance.ms_user.user.infra.config;
 
-import br.com.finance.ms_user.user.application.gateways.PasswordHasher;
-import br.com.finance.ms_user.user.application.gateways.UserRepository;
+import br.com.finance.ms_user.user.application.gateway.PasswordHasher;
+import br.com.finance.ms_user.user.application.gateway.UserRepository;
 import br.com.finance.ms_user.user.application.security.TokenService;
 import br.com.finance.ms_user.user.application.services.UserSpreadsheetParser;
 import br.com.finance.ms_user.user.application.usecases.*;
 import br.com.finance.ms_user.user.infra.security.BCryptPasswordHasher;
 import br.com.finance.ms_user.user.infra.gateway.UserEntityMapper;
-import br.com.finance.ms_user.user.infra.gateway.UserRepositoryJpa;
+import br.com.finance.ms_user.user.infra.gateway.UserRepositoryImpl;
 import br.com.finance.ms_user.user.infra.persistence.UserJpaRepository;
 import br.com.finance.ms_user.user.infra.security.JwtTokenService;
 import org.springframework.context.annotation.Bean;
@@ -44,7 +44,7 @@ public class UserConfig {
 
     @Bean
     UserRepository userRepository(UserJpaRepository jpaRepository, UserEntityMapper mapper) {
-        return new UserRepositoryJpa(jpaRepository, mapper);
+        return new UserRepositoryImpl(jpaRepository, mapper);
     }
 
     @Bean
