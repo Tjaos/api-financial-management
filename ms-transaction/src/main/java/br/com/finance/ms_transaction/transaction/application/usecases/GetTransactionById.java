@@ -13,7 +13,7 @@ public class GetTransactionById {
         this.repository = repository;
     }
 
-    public Transaction getTransaction(UUID userId, UUID transactionId) {
+    public Transaction getTransaction(UUID transactionId, UUID userId) {
 
         Transaction transaction = repository.findById(transactionId).orElseThrow(
                 () -> new RuntimeException("Transação não encontrada")

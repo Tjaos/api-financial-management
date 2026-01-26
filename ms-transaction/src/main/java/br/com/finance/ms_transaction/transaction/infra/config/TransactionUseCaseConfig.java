@@ -24,8 +24,8 @@ public class TransactionUseCaseConfig {
     }
 
     @Bean
-    public UpdateTransactionStatus updateTransaction(TransactionRepository repository) {
-        return new UpdateTransactionStatus(repository);
+    public UpdateTransaction updateTransaction(TransactionRepository repository) {
+        return new UpdateTransaction(repository);
     }
 
     @Bean

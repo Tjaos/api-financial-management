@@ -15,6 +15,7 @@ public record TransactionResponseDto(
         String currency,
         String category,
         TransactionStatus status,
+        String description,
         Instant createdAt
 ) {
 }

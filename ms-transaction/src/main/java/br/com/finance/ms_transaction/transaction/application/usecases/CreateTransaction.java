@@ -2,11 +2,9 @@ package br.com.finance.ms_transaction.transaction.application.usecases;
 
 import br.com.finance.ms_transaction.transaction.application.gateways.TransactionRepository;
 import br.com.finance.ms_transaction.transaction.domain.entities.transaction.Transaction;
-import br.com.finance.ms_transaction.transaction.domain.enums.TransactionStatus;
 import br.com.finance.ms_transaction.transaction.domain.enums.TransactionType;
 
 import java.math.BigDecimal;
-import java.time.Instant;
 import java.util.UUID;
 
 public class CreateTransaction {
@@ -19,7 +17,6 @@ public class CreateTransaction {
     }
 
     public Transaction create(
-            UUID id,
             UUID userId,
             TransactionType type,
             BigDecimal amount,
@@ -28,17 +25,13 @@ public class CreateTransaction {
             String description
     ) {
 
-        Transaction newTransaction = new Transaction(
-                id,
+        Transaction newTransaction = Transaction.create(
                 userId,
                 type,
                 amount,
                 currency,
                 category,
-                description,
-                TransactionStatus.PENDING,
-                Instant.now()
-
+                description
         );
 
         return repository.save(newTransaction);

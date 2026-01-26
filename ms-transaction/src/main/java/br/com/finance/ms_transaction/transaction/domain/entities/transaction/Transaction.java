@@ -14,11 +14,11 @@ public class Transaction {
     private final BigDecimal amount;
     private final String currency;
     private final String category;
-    private TransactionStatus status;
     private final String description;
-    private Instant createdAt;
+    private final Instant createdAt;
+    private TransactionStatus status;
 
-    public Transaction(
+    public static Transaction create(
             UUID userId,
             TransactionType type,
             BigDecimal amount,
@@ -26,14 +26,19 @@ public class Transaction {
             String category,
             String description
     ) {
-        this.id = UUID.randomUUID();
-        this.userId = userId;
-        this.type = type;
-        this.amount = amount;
-        this.currency = currency;
-        this.category = category;
-        this.description = description;
+        return new Transaction(
+                UUID.randomUUID(),
+                userId,
+                type,
+                amount,
+                currency,
+                category,
+                description,
+                TransactionStatus.PENDING,
+                Instant.now()
+        );
     }
+
 
     public Transaction(
             UUID id,
@@ -46,9 +51,14 @@ public class Transaction {
             TransactionStatus status,
             Instant createdAt
     ) {
+        if(id == null) throw new IllegalArgumentException("O id da transação é obrigatório.");
+        if(userId == null) throw new IllegalArgumentException("O id do usuário é obrigatório");
+        if(type == null) throw new IllegalArgumentException("O tipo da transação é obrigatório.");
         if (amount == null || amount.signum() <= 0) {
             throw new IllegalArgumentException("O valor da transação deve ser maior que zero.");
         }
+        if (currency == null || currency.isBlank()) throw new IllegalArgumentException("Moeda é obrigatória");
+        if (category == null || category.isBlank()) throw new IllegalArgumentException("Categoria é obrigatória");
         this.id = id;
         this.userId = userId;
         this.type = type;
@@ -56,16 +66,22 @@ public class Transaction {
         this.currency = currency;
         this.category = category;
         this.description = description;
-        this.status = TransactionStatus.PENDING;
-        this.createdAt = Instant.now();
+        this.status = status;
+        this.createdAt = createdAt;
     }
 
 
     public void approve() {
+        if(!isPending()){
+            throw new IllegalStateException("A transação não está pendente e não pode ser aprovada.");
+        }
         this.status = TransactionStatus.APPROVED;
     }
 
     public void reject() {
+        if(!isPending()){
+            throw new IllegalStateException("A transação não está pendente e não pode ser rejeitada.");
+        }
         this.status = TransactionStatus.REJECTED;
     }
 
@@ -74,6 +90,12 @@ public class Transaction {
                 || type == TransactionType.PURCHASE
                 || type == TransactionType.TRANSFER;
     }
+
+    public boolean isPending() {
+        return this.status == TransactionStatus.PENDING;
+    }
+
+
 
     public UUID getId() {
         return id;
@@ -111,7 +133,4 @@ public class Transaction {
         return createdAt;
     }
 
-    public boolean isPending() {
-        return this.status == TransactionStatus.PENDING;
-    }
 }

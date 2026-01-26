@@ -18,14 +18,14 @@ public class TransactionController {
     private final CreateTransaction createTransaction;
     private final GetTransactionById getTransactionById;
     private final ListTransactionByUser listTransactionsByUser;
-    private final UpdateTransactionStatus updateTransaction;
+    private final UpdateTransaction updateTransaction;
     private final DeleteTransaction deleteTransaction;
     private final JwtUserExtractor jwtUserExtractor;
 
     public TransactionController(CreateTransaction createTransaction,
                                  GetTransactionById getTransactionById,
                                  ListTransactionByUser listTransactionsByUser,
-                                 UpdateTransactionStatus updateTransaction,
+                                 UpdateTransaction updateTransaction,
                                  DeleteTransaction deleteTransaction,
                                  JwtUserExtractor jwtUserExtractor) {
         this.createTransaction = createTransaction;
@@ -42,10 +42,8 @@ public class TransactionController {
             @RequestBody TransactionRequestDto dto) {
 
         UUID userId = jwtUserExtractor.extractUserId(authorization);
-        UUID id = UUID.randomUUID();
 
         Transaction created = createTransaction.create(
-                id,
                 userId,
                 dto.type(),
                 dto.amount(),
@@ -61,7 +59,7 @@ public class TransactionController {
     @GetMapping("/{id}")
     public ResponseEntity<TransactionResponseDto> getById(
             @RequestHeader("Authorization") String authorization,
-            @PathVariable UUID id) {
+            @PathVariable("id") UUID id) {
 
         UUID userId = jwtUserExtractor.extractUserId(authorization);
 
@@ -85,7 +83,7 @@ public class TransactionController {
     @PutMapping("/{id}")
     public ResponseEntity<TransactionResponseDto> update(
             @RequestHeader("Authorization") String authorization,
-            @PathVariable UUID id,
+            @PathVariable("id") UUID id,
             @RequestBody TransactionRequestDto dto) {
 
         UUID userId = jwtUserExtractor.extractUserId(authorization);
@@ -106,11 +104,11 @@ public class TransactionController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(
             @RequestHeader("Authorization") String authorization,
-            @PathVariable UUID id) {
+            @PathVariable("id") UUID id) {
 
         UUID userId = jwtUserExtractor.extractUserId(authorization);
 
-        deleteTransaction.delete(id, userId);
+        deleteTransaction.delete(userId, id);
 
         return ResponseEntity.noContent().build();
     }
@@ -124,6 +122,7 @@ public class TransactionController {
                 t.getCurrency(),
                 t.getCategory(),
                 t.getStatus(),
+                t.getDescription(),
                 t.getCreatedAt()
         );
     }

@@ -7,11 +7,11 @@ import br.com.finance.ms_transaction.transaction.domain.enums.TransactionType;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-public class UpdateTransactionStatus {
+public class UpdateTransaction {
 
     private final TransactionRepository repository;
 
-    public UpdateTransactionStatus(TransactionRepository repository) {
+    public UpdateTransaction(TransactionRepository repository) {
         this.repository = repository;
     }
 
