@@ -48,8 +48,6 @@
         <dependency>
             <groupId>org.springframework.kafka</groupId>
             <artifactId>spring-kafka</artifactId>
-            <version>4.0.1</version>
-            <scope>compile</scope>
         </dependency>
 
         <dependency>

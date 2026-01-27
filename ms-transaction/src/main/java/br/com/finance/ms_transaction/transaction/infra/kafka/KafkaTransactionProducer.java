@@ -1,0 +1,48 @@
+package br.com.finance.ms_transaction.transaction.infra.kafka;
+
+import br.com.finance.ms_transaction.transaction.domain.entities.transaction.Transaction;
+import br.com.finance.ms_transaction.transaction.infra.dto.TransactionEventDto;
+import br.com.finance.ms_transaction.transaction.infra.gateway.TransactionProducer;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.stereotype.Component;
+
+@Component
+@Slf4j
+public class KafkaTransactionProducer implements TransactionProducer {
+
+    private static final String TOPIC = "transaction.requested";
+
+    private final KafkaTemplate<String, TransactionEventDto> kafkaTemplate;
+
+    public KafkaTransactionProducer(KafkaTemplate<String, TransactionEventDto> kafkaTemplate) {
+        this.kafkaTemplate = kafkaTemplate;
+    }
+
+
+    @Override
+    public void send(Transaction transaction) {
+        TransactionEventDto event  = new TransactionEventDto(
+                transaction.getId(),
+                transaction.getUserId(),
+                transaction.getAmount(),
+                transaction.getCurrency(),
+                transaction.getType()
+        );
+
+        log.info("Publicando transaction o evento {} para o tópico {}", event, TOPIC);
+
+        kafkaTemplate.send(TOPIC, transaction.getId().toString(), event)
+                .whenComplete((result, ex) -> {
+                    if (ex != null){
+                        log.error("Falha ao publicar transação no evento", ex);
+                    } else{
+                        log.info("Transação publicada com sucesso no tópico {} na partição {} com offset {}",
+                                result.getRecordMetadata().topic(),
+                                result.getRecordMetadata().partition(),
+                                result.getRecordMetadata().offset());
+                    }
+                });
+
+    }
+}
