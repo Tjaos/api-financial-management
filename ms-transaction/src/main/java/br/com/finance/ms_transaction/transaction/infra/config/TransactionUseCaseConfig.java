@@ -1,8 +1,9 @@
 package br.com.finance.ms_transaction.transaction.infra.config;
 
+import br.com.finance.ms_transaction.transaction.application.gateways.ExchangeRateGateway;
+import br.com.finance.ms_transaction.transaction.application.gateways.TransactionEventPublisher;
 import br.com.finance.ms_transaction.transaction.application.gateways.TransactionRepository;
 import br.com.finance.ms_transaction.transaction.application.usecases.*;
-import br.com.finance.ms_transaction.transaction.infra.gateway.TransactionProducer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -10,8 +11,12 @@ import org.springframework.context.annotation.Configuration;
 public class TransactionUseCaseConfig {
 
     @Bean
-    public CreateTransaction createTransaction(TransactionRepository repository, TransactionProducer producer) {
-        return new CreateTransaction(repository, producer);
+    public CreateTransaction createTransaction(
+            TransactionRepository repository,
+            TransactionEventPublisher publisher,
+            ExchangeRateGateway exchangeRateGateway
+            ) {
+        return new CreateTransaction(repository, publisher, exchangeRateGateway);
     }
 
     @Bean
