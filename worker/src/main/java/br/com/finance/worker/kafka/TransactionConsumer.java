@@ -1,11 +1,10 @@
-package br.com.finance.worker.infra.kafka;
+package br.com.finance.worker.kafka;
 
-import br.com.finance.worker.infra.dto.TransactionEventDto;
+import br.com.finance.worker.service.ProcessTransactionUseCase;
+import br.com.finance.worker.dto.TransactionEventDto;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
-
-import java.math.BigDecimal;
 
 @Component
 public class TransactionConsumer {
@@ -18,21 +17,17 @@ public class TransactionConsumer {
     public void consume(
             ConsumerRecord<String, TransactionEventDto> record) {
 
+
+        ProcessTransactionUseCase processTransactionUseCase = new ProcessTransactionUseCase();
             TransactionEventDto event = record.value();
 
             System.out.println("Mensagem recebida:");
             System.out.println("Key: " + record.key());
             System.out.println("Payload: " + event);
 
-            process(event);
+            processTransactionUseCase.process(event);
     }
 
-    private void process(TransactionEventDto event) {
-        System.out.println(">>> ENTROU NO PROCESS");
-        System.out.println(">>> AMOUNT = " + event.getAmount());
-
-        throw new IllegalArgumentException("FORÇANDO ERRO DLQ");
-    }
 
 
 }

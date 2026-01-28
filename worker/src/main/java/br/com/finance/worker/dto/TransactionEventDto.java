@@ -1,4 +1,4 @@
-package br.com.finance.worker.infra.dto;
+package br.com.finance.worker.dto;
 
 import lombok.Data;
 

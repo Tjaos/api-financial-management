@@ -1,4 +1,4 @@
-package br.com.finance.worker.infra.config;
+package br.com.finance.worker.kafka;
 
 import org.apache.kafka.clients.admin.NewTopic;
 import org.springframework.context.annotation.Bean;

@@ -1,6 +1,6 @@
-package br.com.finance.worker.infra.config;
+package br.com.finance.worker.kafka;
 
-import br.com.finance.worker.infra.dto.TransactionEventDto;
+import br.com.finance.worker.dto.TransactionEventDto;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.serialization.StringSerializer;
