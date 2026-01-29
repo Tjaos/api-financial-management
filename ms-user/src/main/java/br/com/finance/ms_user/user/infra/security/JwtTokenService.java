@@ -1,6 +1,6 @@
 package br.com.finance.ms_user.user.infra.security;
 
-import br.com.finance.ms_user.user.application.security.TokenService;
+import br.com.finance.ms_user.user.application.gateway.TokenService;
 import br.com.finance.ms_user.user.domain.entities.user.User;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

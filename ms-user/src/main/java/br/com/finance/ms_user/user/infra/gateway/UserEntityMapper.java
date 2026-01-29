@@ -10,7 +10,7 @@ public class UserEntityMapper {
                 user.getId(),
                 user.getName(),
                 user.getEmail(),
-                user.getPassword() //senha deve estar com hash
+                user.getPassword()
         );
     }
 

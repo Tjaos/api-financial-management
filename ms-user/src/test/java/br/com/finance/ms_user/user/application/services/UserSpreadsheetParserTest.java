@@ -1,5 +1,6 @@
 package br.com.finance.ms_user.user.application.services;
 
+import br.com.finance.ms_user.user.application.usecases.UserSpreadsheetParser;
 import br.com.finance.ms_user.user.domain.entities.user.User;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -12,7 +13,6 @@ import java.io.ByteArrayOutputStream;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 class UserSpreadsheetParserTest {
 

@@ -1,4 +1,4 @@
-package br.com.finance.ms_user.user.application.services;
+package br.com.finance.ms_user.user.application.usecases;
 
 import br.com.finance.ms_user.user.domain.entities.user.User;
 import org.apache.poi.ss.usermodel.*;

@@ -2,7 +2,7 @@ package br.com.finance.ms_user.user.domain.entities.user;
 
 import br.com.finance.ms_user.user.domain.exceptions.EmailDoesNotBeNullOrEmptException;
 import br.com.finance.ms_user.user.domain.exceptions.InvalidPasswordSizeException;
-import br.com.finance.ms_user.user.domain.exceptions.NullOrBlankInputValuesException;
+import br.com.finance.ms_user.user.domain.exceptions.NullOrBlankNameEmailOrPassordException;
 import java.util.UUID;
 
 public class User {
@@ -33,7 +33,7 @@ public class User {
 
     public void changeName(String name) {
         if(name == null || name.isBlank()){
-            throw new NullOrBlankInputValuesException("Nome não pode ser nulo ou vazio");
+            throw new NullOrBlankNameEmailOrPassordException();
         }
         this.name = name;
     }
@@ -47,7 +47,7 @@ public class User {
 
     public void changePassword(String password) {
         if (password == null || password.isBlank()) {
-            throw new NullOrBlankInputValuesException("Senha não pode ser nula ou vazia");
+            throw new NullOrBlankNameEmailOrPassordException();
         }
 
         verifyPasswordSize(password);
@@ -56,7 +56,7 @@ public class User {
 
     private static void verifyInvalidValues(String name, String email, String password) {
         if(name == null || name.isBlank() || email == null || email.isBlank() || password == null || password.isBlank()) {
-            throw new NullOrBlankInputValuesException("Nome, email e senha não podem ser nulos ou vazios");
+            throw new NullOrBlankNameEmailOrPassordException();
         }
     }
 

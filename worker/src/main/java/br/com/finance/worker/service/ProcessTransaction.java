@@ -4,7 +4,7 @@ import br.com.finance.worker.dto.TransactionEventDto;
 
 import java.math.BigDecimal;
 
-public class ProcessTransactionUseCase {
+public class ProcessTransaction {
     public void process(TransactionEventDto event) {
 
         System.out.println("Processando transação...");
