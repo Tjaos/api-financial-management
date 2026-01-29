@@ -2,14 +2,15 @@ package br.com.finance.ms_user.user.infra.config;
 
 import br.com.finance.ms_user.user.application.gateway.PasswordHasher;
 import br.com.finance.ms_user.user.application.gateway.UserRepository;
-import br.com.finance.ms_user.user.application.security.TokenService;
-import br.com.finance.ms_user.user.application.services.UserSpreadsheetParser;
+import br.com.finance.ms_user.user.application.gateway.TokenService;
+import br.com.finance.ms_user.user.application.usecases.UserSpreadsheetParser;
 import br.com.finance.ms_user.user.application.usecases.*;
 import br.com.finance.ms_user.user.infra.security.BCryptPasswordHasher;
 import br.com.finance.ms_user.user.infra.gateway.UserEntityMapper;
 import br.com.finance.ms_user.user.infra.gateway.UserRepositoryImpl;
 import br.com.finance.ms_user.user.infra.persistence.UserJpaRepository;
 import br.com.finance.ms_user.user.infra.security.JwtTokenService;
+import br.com.finance.ms_user.user.kafka.producer.UserCreatedProducer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,8 +19,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class UserConfig {
 
     @Bean
-    CreateUser createUser(UserRepository userRepository, PasswordHasher passwordHasher) {
-        return new CreateUser(userRepository, passwordHasher);
+    CreateUser createUser(UserRepository userRepository, PasswordHasher passwordHasher, UserCreatedProducer userCreatedProducer) {
+        return new CreateUser(userRepository, passwordHasher,  userCreatedProducer);
     }
 
     @Bean
@@ -69,8 +70,8 @@ public class UserConfig {
 
 
     @Bean
-    BulkCreateUsers bulkCreateUsers(UserRepository userRepository, PasswordHasher passwordHasher, UserSpreadsheetParser spreadsheetParser) {
-        return new BulkCreateUsers(userRepository, passwordHasher, spreadsheetParser);
+    BulkCreateUsers bulkCreateUsers(UserRepository userRepository, PasswordHasher passwordHasher, UserSpreadsheetParser spreadsheetParser, UserCreatedProducer userCreatedProducer) {
+        return new BulkCreateUsers(userRepository, passwordHasher, spreadsheetParser,  userCreatedProducer);
     }
 
     @Bean
