@@ -5,19 +5,16 @@ import br.com.finance.ms_user.user.application.gateway.PasswordHasher;
 import br.com.finance.ms_user.user.application.gateway.UserRepository;
 import br.com.finance.ms_user.user.domain.entities.user.User;
 import br.com.finance.ms_user.user.domain.exceptions.InvalidPasswordSizeException;
-import br.com.finance.ms_user.user.kafka.event.UserCreatedEvent;
-import br.com.finance.ms_user.user.kafka.producer.UserCreatedProducer;
 
 public class CreateUser {
 
     private final UserRepository userRepository;
     private final PasswordHasher passwordHasher;
-    private final UserCreatedProducer userCreatedProducer;
 
-    public CreateUser(UserRepository userRepository, PasswordHasher passwordHasher, UserCreatedProducer userCreatedProducer) {
+    public CreateUser(UserRepository userRepository,PasswordHasher passwordHasher
+    ) {
         this.userRepository = userRepository;
         this.passwordHasher = passwordHasher;
-        this.userCreatedProducer = userCreatedProducer;
     }
 
 
@@ -35,12 +32,8 @@ public class CreateUser {
                 user.getEmail(),
                 hashedPassword
         );
-        userRepository.save(userWithHashedPassword);
-        userCreatedProducer.send(
-            new UserCreatedEvent(user.getId(), user.getEmail())
-        );
 
-        return userWithHashedPassword;
+        return userRepository.save(userWithHashedPassword);
     }
 }
 
