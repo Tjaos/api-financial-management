@@ -16,10 +16,12 @@ public class TransactionApprovedConsumer {
     }
 
     @KafkaListener(
-            topics = "transaction.requested",
-            groupId = "ms-transaction-group"
+            topics = "transaction.approved",
+            groupId = "ms-transaction-group",
+            containerFactory = "kafkaListenerContainerFactory"
     )
     public void consume(TransactionApprovedEvent event) {
+        System.out.println("Evento aprovado recebido: " + event.transactionId());
 
         Transaction transaction = repository.findById(event.transactionId())
                 .orElseThrow();

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.UUID;
 
 @Component
 public class TransactionReportGatewayImpl implements TransactionReportGateway {
@@ -23,13 +24,16 @@ public class TransactionReportGatewayImpl implements TransactionReportGateway {
 
 
     @Override
-    public List<Transaction> findApprovedByPeriod(
+    public List<Transaction> findApprovedByUserIdAndStatusAndCreatedAtBetween(
+            UUID userId,
+            TransactionStatus status,
             Instant start,
             Instant end
     ) {
         return repository
-                .findByStatusAndCreatedAtBetween(
-                        TransactionStatus.APPROVED,
+                .findApprovedByUserIdAndStatusAndCreatedAtBetween(
+                        userId,
+                        status,
                         start,
                         end
                 )
@@ -37,4 +41,5 @@ public class TransactionReportGatewayImpl implements TransactionReportGateway {
                 .map(mapper::toDomain)
                 .toList();
     }
+
 }

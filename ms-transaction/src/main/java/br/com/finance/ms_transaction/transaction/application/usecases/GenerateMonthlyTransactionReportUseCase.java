@@ -3,12 +3,14 @@ package br.com.finance.ms_transaction.transaction.application.usecases;
 import br.com.finance.ms_transaction.transaction.application.dto.MonthlyTransactionReport;
 import br.com.finance.ms_transaction.transaction.application.gateways.TransactionReportGateway;
 import br.com.finance.ms_transaction.transaction.domain.entities.transaction.Transaction;
+import br.com.finance.ms_transaction.transaction.domain.enums.TransactionStatus;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.YearMonth;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.UUID;
 
 public class GenerateMonthlyTransactionReportUseCase {
 
@@ -18,7 +20,7 @@ public class GenerateMonthlyTransactionReportUseCase {
         this.gateway = gateway;
     }
 
-    public MonthlyTransactionReport execute(Integer month, Integer year) {
+    public MonthlyTransactionReport execute(UUID userId, Integer month, Integer year) {
 
         YearMonth yearMonth = resolveYearMonth(month, year);
 
@@ -32,7 +34,12 @@ public class GenerateMonthlyTransactionReportUseCase {
                 .toInstant();
 
         List<Transaction> transactions =
-                gateway.findApprovedByPeriod(start, end);
+                gateway.findApprovedByUserIdAndStatusAndCreatedAtBetween(
+                        userId,
+                        TransactionStatus.APPROVED,
+                        start,
+                        end
+                );
 
         BigDecimal income = BigDecimal.ZERO;
         BigDecimal expense = BigDecimal.ZERO;

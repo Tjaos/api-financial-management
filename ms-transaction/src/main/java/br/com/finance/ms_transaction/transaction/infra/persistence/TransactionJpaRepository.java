@@ -10,7 +10,8 @@ import java.util.UUID;
 
 public interface TransactionJpaRepository extends JpaRepository<TransactionEntity, UUID> {
     List<TransactionEntity> findAllByUserId(UUID id);
-    List<TransactionEntity> findByStatusAndCreatedAtBetween(
+    List<TransactionEntity> findApprovedByUserIdAndStatusAndCreatedAtBetween(
+            UUID userId,
             TransactionStatus status,
             Instant start,
             Instant end

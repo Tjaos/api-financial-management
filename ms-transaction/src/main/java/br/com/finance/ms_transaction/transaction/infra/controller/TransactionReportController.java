@@ -2,50 +2,70 @@ package br.com.finance.ms_transaction.transaction.infra.controller;
 
 import br.com.finance.ms_transaction.transaction.application.dto.MonthlyTransactionReport;
 import br.com.finance.ms_transaction.transaction.application.usecases.GenerateMonthlyTransactionReportUseCase;
-import br.com.finance.ms_transaction.transaction.infra.dto.MonthlyReportResponseDto;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import br.com.finance.ms_transaction.transaction.infra.service.MonthlyTransactionReportExcelService;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/transactions/reports")
 public class TransactionReportController {
 
     private final GenerateMonthlyTransactionReportUseCase generateReport;
+    private final MonthlyTransactionReportExcelService excelService;
 
-    public TransactionReportController(GenerateMonthlyTransactionReportUseCase generateReport) {
+    private final JwtUserExtractor jwtUserExtractor;
+
+    public TransactionReportController(
+            GenerateMonthlyTransactionReportUseCase generateReport, MonthlyTransactionReportExcelService excelService,
+            JwtUserExtractor jwtUserExtractor
+    ) {
         this.generateReport = generateReport;
+        this.excelService = excelService;
+        this.jwtUserExtractor = jwtUserExtractor;
     }
-
 
     @GetMapping
     public MonthlyTransactionReport getReport(
-            @RequestParam(required = false) Integer month,
-            @RequestParam(required = false) Integer year
-    ){
-        var report = generateReport.execute(month, year);
-
-        return new MonthlyTransactionReport(
-                report.month(),
-                report.year(),
-                report.totalIncome(),
-                report.totalExpense(),
-                report.balance(),
-                report.items().stream()
-                        .map(i -> new MonthlyTransactionReport.Item(
-                                i.id(),
-                                i.type(),
-                                i.amount(),
-                                i.category(),
-                                i.description(),
-                                i.status(),
-                                i.createdAt()
-                        ))
-                        .toList()
-        );
-
-
+            @RequestParam(required = false, name = "month") Integer month,
+            @RequestParam(required = false, name = "year") Integer year,
+            @RequestHeader("Authorization") String authorization
+    ) {
+        UUID userId = jwtUserExtractor.extractUserId(authorization);
+        return generateReport.execute(userId, month, year);
     }
 
+    @GetMapping("/export")
+    public ResponseEntity<byte[]> exportReport(
+            @RequestParam(required = false, name = "month") Integer month,
+            @RequestParam(required = false, name = "year") Integer year,
+            @RequestHeader("Authorization") String authorization
+    ) {
+        UUID userId = jwtUserExtractor.extractUserId(authorization);
+
+        MonthlyTransactionReport report =
+                generateReport.execute(userId, month, year);
+
+        byte[] file =
+                excelService.generate(report);
+
+        String filename = String.format(
+                "monthly-transaction-report-%d-%02d.xlsx",
+                report.year(),
+                report.month()
+        );
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=" + filename)
+                .contentType(
+                        MediaType.parseMediaType(
+                                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                        )
+                )
+                .body(file);
+    }
 }
