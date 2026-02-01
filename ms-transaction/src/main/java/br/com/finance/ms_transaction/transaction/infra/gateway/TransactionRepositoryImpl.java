@@ -15,29 +15,31 @@ import java.util.UUID;
 public class TransactionRepositoryImpl implements TransactionRepository {
 
     private final TransactionJpaRepository jpaRepository;
+    private final TransactionMapper mapper;
 
-    public TransactionRepositoryImpl(TransactionJpaRepository jpaRepository) {
+    public TransactionRepositoryImpl(TransactionJpaRepository jpaRepository, TransactionMapper mapper) {
         this.jpaRepository = jpaRepository;
+        this.mapper = mapper;
     }
 
     @Override
     public Transaction save(Transaction transaction) {
-        TransactionEntity entity = TransactionMapper.toEntity(transaction);
+        TransactionEntity entity = mapper.toEntity(transaction);
         TransactionEntity saved = jpaRepository.save(entity);
-        return TransactionMapper.toDomain(saved);
+        return mapper.toDomain(saved);
     }
 
     @Override
     public Optional<Transaction> findById(UUID id) {
         return jpaRepository.findById(id)
-                .map(TransactionMapper::toDomain);
+                .map(mapper::toDomain);
     }
 
     @Override
     public List<Transaction> findByUserId(UUID userId) {
         return jpaRepository.findAllByUserId(userId)
                 .stream()
-                .map(TransactionMapper::toDomain)
+                .map(mapper::toDomain)
                 .toList();
     }
 

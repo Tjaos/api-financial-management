@@ -2,6 +2,7 @@ package br.com.finance.ms_transaction.transaction.infra.config;
 
 import br.com.finance.ms_transaction.transaction.application.gateways.ExchangeRateGateway;
 import br.com.finance.ms_transaction.transaction.application.gateways.TransactionEventPublisher;
+import br.com.finance.ms_transaction.transaction.application.gateways.TransactionReportGateway;
 import br.com.finance.ms_transaction.transaction.application.gateways.TransactionRepository;
 import br.com.finance.ms_transaction.transaction.application.usecases.*;
 import org.springframework.context.annotation.Bean;
@@ -42,5 +43,12 @@ public class TransactionUseCaseConfig {
     @Bean
     public ApproveTransaction approveTransaction(TransactionRepository repository) {
         return new ApproveTransaction(repository);
+    }
+
+    @Bean
+    GenerateMonthlyTransactionReportUseCase generateMonthlyTransactionReportUseCase(
+            TransactionReportGateway transactionReportGateway
+    ){
+        return new GenerateMonthlyTransactionReportUseCase(transactionReportGateway);
     }
 }

@@ -85,7 +85,7 @@ public class Transaction {
         this.status = TransactionStatus.REJECTED;
     }
 
-    boolean isExpense() {
+    public boolean isExpense() {
         return type == TransactionType.WITHDRAW
                 || type == TransactionType.PURCHASE
                 || type == TransactionType.TRANSFER;

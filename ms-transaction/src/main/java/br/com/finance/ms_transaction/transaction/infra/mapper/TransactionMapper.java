@@ -2,10 +2,12 @@ package br.com.finance.ms_transaction.transaction.infra.mapper;
 
 import br.com.finance.ms_transaction.transaction.domain.entities.transaction.Transaction;
 import br.com.finance.ms_transaction.transaction.infra.persistence.TransactionEntity;
+import org.springframework.stereotype.Component;
 
+@Component
 public class TransactionMapper {
 
-    public static TransactionEntity toEntity(Transaction transaction) {
+    public TransactionEntity toEntity(Transaction transaction) {
         return new TransactionEntity(
                 transaction.getId(),
                 transaction.getUserId(),
@@ -19,7 +21,7 @@ public class TransactionMapper {
         );
     }
 
-    public static Transaction toDomain(TransactionEntity entity) {
+    public Transaction toDomain(TransactionEntity entity) {
         return new Transaction(
                 entity.getId(),
                 entity.getUserId(),
