@@ -57,7 +57,7 @@ public class Transaction {
         if (amount == null || amount.signum() <= 0) {
             throw new IllegalArgumentException("O valor da transação deve ser maior que zero.");
         }
-        if (currency == null || currency.isBlank()) throw new IllegalArgumentException("Moeda é obrigatória");
+        if (currency == null || currency.isBlank()) currency = "BRL";
         if (category == null || category.isBlank()) throw new IllegalArgumentException("Categoria é obrigatória");
         this.id = id;
         this.userId = userId;

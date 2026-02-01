@@ -38,4 +38,9 @@ public class TransactionUseCaseConfig {
     public DeleteTransaction deleteTransaction(TransactionRepository repository) {
         return new DeleteTransaction(repository);
     }
+
+    @Bean
+    public ApproveTransaction approveTransaction(TransactionRepository repository) {
+        return new ApproveTransaction(repository);
+    }
 }

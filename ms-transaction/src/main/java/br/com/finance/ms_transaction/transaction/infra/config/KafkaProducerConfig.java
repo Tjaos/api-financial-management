@@ -1,6 +1,6 @@
 package br.com.finance.ms_transaction.transaction.infra.config;
 
-import br.com.finance.ms_transaction.transaction.infra.dto.TransactionEventDto;
+import br.com.finance.ms_transaction.transaction.infra.kafka.event.TransactionApprovedEvent;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -17,7 +17,7 @@ import java.util.Map;
 public class KafkaProducerConfig {
 
     @Bean
-    public ProducerFactory<String, TransactionEventDto> producerFactory(){
+    public ProducerFactory<String, TransactionApprovedEvent> producerFactory(){
         Map<String, Object> config = new HashMap<>();
 
 
@@ -29,7 +29,7 @@ public class KafkaProducerConfig {
     }
 
     @Bean
-    public KafkaTemplate<String, TransactionEventDto> kafkaTemplate(){
+    public KafkaTemplate<String, TransactionApprovedEvent> kafkaTemplate(){
         return new KafkaTemplate<>(producerFactory());
     }
 }

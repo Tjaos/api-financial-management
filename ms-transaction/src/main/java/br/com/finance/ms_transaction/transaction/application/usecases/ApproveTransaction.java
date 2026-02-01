@@ -12,13 +12,9 @@ public class ApproveTransaction {
         this.transactionRepository = transactionRepository;
     }
 
-    public Transaction approve(UUID transactionId, UUID userId) {
+    public Transaction approve(UUID transactionId) {
         Transaction transaction = transactionRepository.findById(transactionId)
                 .orElseThrow(() -> new IllegalArgumentException("Transação não encontrada"));
-
-        if (!transaction.getUserId().equals(userId)) {
-            throw new RuntimeException("Acesso negado! Usuário não autorizado a aprovar esta transação.");
-        }
 
         transaction.approve();
 

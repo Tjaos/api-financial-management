@@ -47,7 +47,7 @@ class ApproveTransactionTest {
         when(repository.findById(transactionId)).thenReturn(Optional.of(pending));
         when(repository.save(any(Transaction.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        Transaction result = approveTransaction.approve(transactionId, userId);
+        Transaction result = approveTransaction.approve(transactionId);
 
         assertThat(result.getStatus()).isEqualTo(TransactionStatus.APPROVED);
         verify(repository).findById(transactionId);
@@ -61,7 +61,7 @@ class ApproveTransactionTest {
 
         when(repository.findById(transactionId)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> approveTransaction.approve(transactionId, userId))
+        assertThatThrownBy(() -> approveTransaction.approve(transactionId))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessage("Transação não encontrada");
 
@@ -89,7 +89,7 @@ class ApproveTransactionTest {
 
         when(repository.findById(transactionId)).thenReturn(Optional.of(pending));
 
-        assertThatThrownBy(() -> approveTransaction.approve(transactionId, otherUserId))
+        assertThatThrownBy(() -> approveTransaction.approve(transactionId))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessage("Acesso negado! Usuário não autorizado a aprovar esta transação.");
 
@@ -116,7 +116,7 @@ class ApproveTransactionTest {
 
         when(repository.findById(transactionId)).thenReturn(Optional.of(approved));
 
-        assertThatThrownBy(() -> approveTransaction.approve(transactionId, userId))
+        assertThatThrownBy(() -> approveTransaction.approve(transactionId))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessage("A transação não está pendente e não pode ser aprovada.");
 

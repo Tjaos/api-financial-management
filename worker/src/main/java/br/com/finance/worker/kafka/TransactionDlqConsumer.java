@@ -12,17 +12,8 @@ public class TransactionDlqConsumer {
             topics = "transaction.dql",
             groupId = "transaction-dql-group"
     )
-    public void consumeDql(ConsumerRecord<String, TransactionEventDto> record) {
-
-        System.err.println("DQL - Mensagem recebida:");
-        System.err.println("DQL - Key: " + record.key());
-        System.err.println("DQL - Payload: " + record.value());
-
-        record.headers().forEach(header ->
-                System.err.println(
-                        "Header: " + header.key() + " = " + new String(header.value())
-                )
-        );
+    public void consumeDql(ConsumerRecord<String, Object> record) {
+        System.err.println("DLQ - Mensagem recebida: " + record.value());
     }
 
 }

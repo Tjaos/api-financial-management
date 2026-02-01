@@ -2,7 +2,7 @@ package br.com.finance.ms_transaction.transaction.infra.kafka;
 
 import br.com.finance.ms_transaction.transaction.application.gateways.TransactionEventPublisher;
 import br.com.finance.ms_transaction.transaction.domain.entities.transaction.Transaction;
-import br.com.finance.ms_transaction.transaction.infra.dto.TransactionEventDto;
+import br.com.finance.ms_transaction.transaction.infra.kafka.event.TransactionApprovedEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
@@ -13,21 +13,17 @@ public class KafkaTransactionProducer implements TransactionEventPublisher {
 
     private static final String TOPIC = "transaction.requested";
 
-    private final KafkaTemplate<String, TransactionEventDto> kafkaTemplate;
+    private final KafkaTemplate<String, TransactionApprovedEvent> kafkaTemplate;
 
-    public KafkaTransactionProducer(KafkaTemplate<String, TransactionEventDto> kafkaTemplate) {
+    public KafkaTransactionProducer(KafkaTemplate<String, TransactionApprovedEvent> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
     }
 
 
     @Override
     public void publish(Transaction transaction) {
-        TransactionEventDto event  = new TransactionEventDto(
-                transaction.getId(),
-                transaction.getUserId(),
-                transaction.getAmount(),
-                transaction.getCurrency(),
-                transaction.getType()
+        TransactionApprovedEvent event  = new TransactionApprovedEvent(
+                transaction.getId()
         );
 
         log.info("Publicando transaction o evento {} para o tópico {}", event, TOPIC);

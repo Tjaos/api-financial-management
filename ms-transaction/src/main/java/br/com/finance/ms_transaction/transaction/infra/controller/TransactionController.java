@@ -77,7 +77,7 @@ public class TransactionController {
             description = "Obtém os detalhes de uma transação financeira específica pelo seu ID"
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Transação obtida com sucesso"),
+            @ApiResponse(responseCode = "200", description = "Transação obtida com sucesso"),
             @ApiResponse(responseCode = "500", description = "Erro interno")
     })
     @GetMapping("/{id}")
