@@ -81,13 +81,13 @@ class CreateUserTest {
     @Test
     void shouldHashPasswordBeforeSavingUser() {
         // Arrange
-        User inputUser = new User("Thiago", "thiago@email.com", "plain");
+        User inputUser = new User("Thiago", "thiago@email.com", "123456");
 
         when(userRepository.existsByEmail(any()))
                 .thenReturn(false);
 
-        when(passwordHasher.hash("plain"))
-                .thenReturn("hashed-plain");
+        when(passwordHasher.hash("123456"))
+                .thenReturn("hashed-123456");
 
         when(userRepository.save(any(User.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
@@ -103,8 +103,8 @@ class CreateUserTest {
 
         assertThat(savedUser.getName()).isEqualTo("Thiago");
         assertThat(savedUser.getEmail()).isEqualTo("thiago@email.com");
-        assertThat(savedUser.getPassword()).isEqualTo("hashed-plain");
-        assertThat(savedUser.getPassword()).isNotEqualTo("plain");
+        assertThat(savedUser.getPassword()).isEqualTo("hashed-123456");
+        assertThat(savedUser.getPassword()).isNotEqualTo("123456");
     }
 
 }
