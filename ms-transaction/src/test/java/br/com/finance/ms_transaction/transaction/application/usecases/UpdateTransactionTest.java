@@ -204,7 +204,7 @@ class UpdateTransactionTest {
                 "BRL",
                 "Food",
                 "Lunch",
-                TransactionStatus.APPROVED, // não pendente
+                TransactionStatus.APPROVED,
                 Instant.now()
         );
 
@@ -221,7 +221,7 @@ class UpdateTransactionTest {
                 "Salary",
                 "Monthly salary"
         )).isInstanceOf(RuntimeException.class)
-                .hasMessage("Apenas transções pendentes podem ser atualizadas");
+                .hasMessage("Apenas transções pendentes podem ser atualizadas!");
 
         verify(repository, times(1)).findById(transactionId);
         verify(repository, never()).save(any());

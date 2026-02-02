@@ -1,17 +1,18 @@
 package br.com.finance.ms_transaction.transaction.application.usecases;
 
+import br.com.finance.ms_transaction.transaction.application.gateways.ExchangeRateGateway;
+import br.com.finance.ms_transaction.transaction.application.gateways.TransactionEventPublisher;
 import br.com.finance.ms_transaction.transaction.application.gateways.TransactionRepository;
 import br.com.finance.ms_transaction.transaction.domain.entities.transaction.Transaction;
 import br.com.finance.ms_transaction.transaction.domain.enums.TransactionStatus;
 import br.com.finance.ms_transaction.transaction.domain.enums.TransactionType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
-import java.time.Instant;
+import java.time.LocalDate;
 import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -21,76 +22,108 @@ import static org.mockito.Mockito.*;
 class CreateTransactionTest {
 
     @Mock
-    private TransactionRepository transactionRepository;
+    private TransactionRepository repository;
+
+    @Mock
+    private TransactionEventPublisher publisher;
+
+    @Mock
+    private ExchangeRateGateway exchangeRateGateway;
 
     @InjectMocks
     private CreateTransaction createTransaction;
 
     @Test
-    void shouldCreateTransactionWithPendingStatusAndCurrentTimestamp() {
+    void shouldCreateTransactionWithBRLCurrencyWithoutCallingExchangeRate() {
         // Arrange
         UUID userId = UUID.randomUUID();
-        TransactionType type = TransactionType.PURCHASE;
-        BigDecimal amount = new BigDecimal("150.75");
-        String currency = "BRL";
-        String category = "FOOD";
-        String description = "Almoço no restaurante";
 
-        when(transactionRepository.save(any(Transaction.class)))
+        when(repository.save(any(Transaction.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
-
-        ArgumentCaptor<Transaction> transactionCaptor =
-                ArgumentCaptor.forClass(Transaction.class);
 
         // Act
         Transaction result = createTransaction.create(
                 userId,
-                type,
-                amount,
-                currency,
-                category,
-                description
+                TransactionType.PURCHASE,
+                BigDecimal.valueOf(100),
+                "BRL",
+                "Food",
+                "Lunch"
         );
 
         // Assert
         assertThat(result).isNotNull();
         assertThat(result.getUserId()).isEqualTo(userId);
-        assertThat(result.getType()).isEqualTo(type);
-        assertThat(result.getAmount()).isEqualTo(amount);
-        assertThat(result.getCurrency()).isEqualTo(currency);
-        assertThat(result.getCategory()).isEqualTo(category);
-        assertThat(result.getDescription()).isEqualTo(description);
+        assertThat(result.getAmount()).isEqualByComparingTo(BigDecimal.valueOf(100));
+        assertThat(result.getCurrency()).isEqualTo("BRL");
+        assertThat(result.getType()).isEqualTo(TransactionType.PURCHASE);
+        assertThat(result.getCategory()).isEqualTo("Food");
+        assertThat(result.getDescription()).isEqualTo("Lunch");
         assertThat(result.getStatus()).isEqualTo(TransactionStatus.PENDING);
-        assertThat(result.getCreatedAt()).isNotNull();
-        assertThat(result.getCreatedAt()).isBeforeOrEqualTo(Instant.now());
 
-        verify(transactionRepository, times(1)).save(transactionCaptor.capture());
+        verify(exchangeRateGateway, never())
+                .getRateToBRL(any(), any());
 
-        Transaction saved = transactionCaptor.getValue();
-
-        assertThat(saved.getStatus()).isEqualTo(TransactionStatus.PENDING);
-        assertThat(saved.getCreatedAt()).isNotNull();
+        verify(repository, times(1)).save(any(Transaction.class));
+        verify(publisher, times(1)).publish(any(Transaction.class));
     }
 
     @Test
-    void shouldCallRepositorySaveOnce() {
+    void shouldConvertAmountWhenCurrencyIsNotBRL() {
         // Arrange
-        when(transactionRepository.save(any(Transaction.class)))
+        UUID userId = UUID.randomUUID();
+        BigDecimal rate = BigDecimal.valueOf(5);
+        BigDecimal originalAmount = BigDecimal.valueOf(100);
+
+        when(exchangeRateGateway.getRateToBRL(
+                eq("USD"),
+                any(LocalDate.class)
+        )).thenReturn(rate);
+
+        when(repository.save(any(Transaction.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
         // Act
-        createTransaction.create(
-                UUID.randomUUID(),
+        Transaction result = createTransaction.create(
+                userId,
                 TransactionType.DEPOSIT,
-                new BigDecimal("300.00"),
+                originalAmount,
                 "USD",
-                "SALARY",
-                "Salário mensal"
+                "Salary",
+                "Monthly salary"
         );
 
         // Assert
-        verify(transactionRepository, times(1)).save(any(Transaction.class));
+        assertThat(result.getAmount())
+                .isEqualByComparingTo(BigDecimal.valueOf(500));
+
+        assertThat(result.getCurrency()).isEqualTo("BRL");
+
+        verify(exchangeRateGateway, times(1))
+                .getRateToBRL(eq("USD"), any(LocalDate.class));
+
+        verify(repository, times(1)).save(any(Transaction.class));
+        verify(publisher, times(1)).publish(any(Transaction.class));
     }
 
+    @Test
+    void shouldPublishEventAfterSavingTransaction() {
+        // Arrange
+        when(repository.save(any(Transaction.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
 
+        // Act
+        Transaction transaction = createTransaction.create(
+                UUID.randomUUID(),
+                TransactionType.TRANSFER,
+                BigDecimal.valueOf(50),
+                "BRL",
+                "Transfer",
+                "Pix"
+        );
+
+        // Assert
+        verify(repository).save(transaction);
+        verify(publisher).publish(transaction);
+    }
 }

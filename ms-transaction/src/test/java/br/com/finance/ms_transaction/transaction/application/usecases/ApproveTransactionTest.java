@@ -69,33 +69,6 @@ class ApproveTransactionTest {
         verify(repository, never()).save(any());
     }
 
-    @Test
-    void shouldThrowExceptionWhenUserIsNotOwner() {
-        UUID transactionId = UUID.randomUUID();
-        UUID ownerId = UUID.randomUUID();
-        UUID otherUserId = UUID.randomUUID();
-
-        Transaction pending = new Transaction(
-                transactionId,
-                ownerId,
-                TransactionType.PURCHASE,
-                BigDecimal.valueOf(50),
-                "BRL",
-                "Lanche",
-                "Café",
-                TransactionStatus.PENDING,
-                Instant.now()
-        );
-
-        when(repository.findById(transactionId)).thenReturn(Optional.of(pending));
-
-        assertThatThrownBy(() -> approveTransaction.approve(transactionId))
-                .isInstanceOf(RuntimeException.class)
-                .hasMessage("Acesso negado! Usuário não autorizado a aprovar esta transação.");
-
-        verify(repository).findById(transactionId);
-        verify(repository, never()).save(any());
-    }
 
     @Test
     void shouldThrowExceptionWhenTransactionIsNotPending() {

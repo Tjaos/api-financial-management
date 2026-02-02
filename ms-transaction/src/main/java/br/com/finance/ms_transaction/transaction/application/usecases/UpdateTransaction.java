@@ -28,6 +28,9 @@ public class UpdateTransaction {
         if (!transaction.getUserId().equals(userId)) {
             throw new RuntimeException("Acesso negado!");
         }
+        if(transaction.getStatus() != null && !transaction.getStatus().name().equals("PENDING")) {
+            throw new RuntimeException("Apenas transções pendentes podem ser atualizadas!");
+        }
         Transaction updated = new Transaction(
                 transaction.getId(),
                 transaction.getUserId(),
