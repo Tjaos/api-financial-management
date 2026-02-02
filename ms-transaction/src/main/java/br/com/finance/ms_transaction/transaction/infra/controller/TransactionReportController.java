@@ -3,6 +3,9 @@ package br.com.finance.ms_transaction.transaction.infra.controller;
 import br.com.finance.ms_transaction.transaction.application.dto.MonthlyTransactionReport;
 import br.com.finance.ms_transaction.transaction.application.usecases.GenerateMonthlyTransactionReportUseCase;
 import br.com.finance.ms_transaction.transaction.infra.service.MonthlyTransactionReportExcelService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +31,15 @@ public class TransactionReportController {
         this.jwtUserExtractor = jwtUserExtractor;
     }
 
+
+    @Operation(
+            summary = "Obter relatório mensal de transações",
+            description = "Gera um relatório mensal de transações financeiras do usuário"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Relatório gerado com sucesso"),
+            @ApiResponse(responseCode = "500", description = "Erro interno")
+    })
     @GetMapping
     public MonthlyTransactionReport getReport(
             @RequestParam(required = false, name = "month") Integer month,
@@ -38,6 +50,14 @@ public class TransactionReportController {
         return generateReport.execute(userId, month, year);
     }
 
+    @Operation(
+            summary = "Exportar relatório mensal de transações",
+            description = "Gera um relatório mensal de transações financeiras do usuário em formato Excel"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Relatório gerado com sucesso"),
+            @ApiResponse(responseCode = "500", description = "Erro interno")
+    })
     @GetMapping("/export")
     public ResponseEntity<byte[]> exportReport(
             @RequestParam(required = false, name = "month") Integer month,

@@ -7,6 +7,11 @@ import br.com.finance.ms_user.user.application.usecases.UpdateUser;
 import br.com.finance.ms_user.user.domain.entities.user.User;
 import br.com.finance.ms_user.user.infra.dto.UserRequestDto;
 import br.com.finance.ms_user.user.infra.dto.UserResponseDto;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +20,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
+@SecurityRequirement(name = "bearerAuth")
+@Tag(name = "Users", description = "Operações relacionadas aos usuários do sistema")
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -31,6 +38,14 @@ public class UserController {
         this.showUsers = showUsers;
     }
 
+    @Operation(
+            summary = "Criar um novo usuário",
+            description = "Cria um novo usuário no sistema"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Usuário criado com sucesso"),
+            @ApiResponse(responseCode = "500", description = "Erro interno")
+    })
     @PostMapping("/register")
     public ResponseEntity<UserResponseDto> createUser(@Valid @RequestBody UserRequestDto userDto) {
         User newUser = createUser.createUser(
@@ -48,6 +63,14 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    @Operation(
+            summary = "Listar usuários",
+            description = "Retorna uma lista paginada de usuários cadastrados no sistema"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Lista de usuários retornada com sucesso"),
+            @ApiResponse(responseCode = "500", description = "Erro interno")
+    })
     @GetMapping
     public ResponseEntity<List<UserResponseDto>> getUsers(
             @RequestParam(name= "page", defaultValue = "0") int page,
@@ -59,6 +82,14 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 
+    @Operation(
+            summary = "Atualizar um usuário",
+            description = "Atualiza os dados de um usuário existente no sistema"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Usuário atualizado com sucesso"),
+            @ApiResponse(responseCode = "500", description = "Erro interno")
+    })
     @PutMapping("/{id}")
     public ResponseEntity<UserResponseDto> updateUser(
             @PathVariable("id") UUID id,
@@ -79,6 +110,14 @@ public class UserController {
         return  ResponseEntity.ok(response);
     }
 
+    @Operation(
+            summary = "Deletar um usuário",
+            description = "Deleta um usuário existente no sistema"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Usuário deletado com sucesso"),
+            @ApiResponse(responseCode = "500", description = "Erro interno")
+    })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(
             @PathVariable("id") UUID id) {
