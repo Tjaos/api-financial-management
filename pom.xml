@@ -15,6 +15,7 @@
         <module>ms-user</module>
         <module>ms-transaction</module>
         <module>worker</module>
+        <module>finance-events</module>
     </modules>
 
     <dependencyManagement>

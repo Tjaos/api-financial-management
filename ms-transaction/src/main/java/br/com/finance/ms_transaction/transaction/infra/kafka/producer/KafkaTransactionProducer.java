@@ -1,4 +1,4 @@
-package br.com.finance.ms_transaction.transaction.infra.kafka;
+package br.com.finance.ms_transaction.transaction.infra.kafka.producer;
 
 import br.com.finance.ms_transaction.transaction.application.gateways.TransactionEventPublisher;
 import br.com.finance.ms_transaction.transaction.domain.entities.transaction.Transaction;
@@ -23,7 +23,8 @@ public class KafkaTransactionProducer implements TransactionEventPublisher {
     @Override
     public void publish(Transaction transaction) {
         TransactionApprovedEvent event  = new TransactionApprovedEvent(
-                transaction.getId()
+                transaction.getId(),
+                transaction.getAmount()
         );
 
         log.info("Publicando transaction o evento {} para o tópico {}", event, TOPIC);

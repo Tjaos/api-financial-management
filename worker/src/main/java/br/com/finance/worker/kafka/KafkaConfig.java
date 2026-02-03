@@ -1,6 +1,6 @@
 package br.com.finance.worker.kafka;
 
-import br.com.finance.worker.dto.TransactionEventDto;
+import br.com.finance.events.transaction.TransactionEventDto;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.TopicPartition;
@@ -16,7 +16,6 @@ import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.listener.DeadLetterPublishingRecoverer;
 import org.springframework.kafka.listener.DefaultErrorHandler;
-import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.springframework.util.backoff.FixedBackOff;
 
@@ -27,24 +26,22 @@ import java.util.Map;
 public class KafkaConfig {
 
     @Bean
-    public ProducerFactory<String, Object> dlqProducerFactory() {
+    public ProducerFactory<String, TransactionEventDto> producerFactory() {
         Map<String, Object> config = new HashMap<>();
         config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
         config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
-        config.put(JsonDeserializer.TRUSTED_PACKAGES, "br.com.finance.worker");
-        config.put(JsonDeserializer.VALUE_DEFAULT_TYPE, "br.com.finance.worker.dto.TransactionEventDto");
 
         return new DefaultKafkaProducerFactory<>(config);
     }
 
     @Bean
-    public KafkaTemplate<String, Object> dlqKafkaTemplate() {
-        return new KafkaTemplate<>(dlqProducerFactory());
+    public KafkaTemplate<String, TransactionEventDto> kafkaTemplate() {
+        return new KafkaTemplate<>(producerFactory());
     }
 
     @Bean
-    public DefaultErrorHandler errorHandler(KafkaTemplate<String, Object> kafkaTemplate) {
+    public DefaultErrorHandler errorHandler(KafkaTemplate<String, TransactionEventDto> kafkaTemplate) {
 
         DeadLetterPublishingRecoverer recoverer =
                 new DeadLetterPublishingRecoverer(

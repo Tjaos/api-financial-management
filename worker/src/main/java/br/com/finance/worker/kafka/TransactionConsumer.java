@@ -1,20 +1,19 @@
 package br.com.finance.worker.kafka;
 
 import br.com.finance.worker.service.ProcessTransaction;
-import br.com.finance.worker.dto.TransactionEventDto;
+import br.com.finance.events.transaction.TransactionEventDto;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
+@Slf4j
 public class TransactionConsumer {
 
-    private final KafkaTemplate<String, Object> kafkaTemplate;
     private final ProcessTransaction processTransaction;
 
-    public TransactionConsumer(KafkaTemplate<String, Object> kafkaTemplate, ProcessTransaction processTransaction) {
-        this.kafkaTemplate = kafkaTemplate;
+    public TransactionConsumer(ProcessTransaction processTransaction) {
         this.processTransaction = processTransaction;
     }
 
@@ -25,10 +24,20 @@ public class TransactionConsumer {
     )
     public void consume(ConsumerRecord<String, TransactionEventDto> record) {
 
-        ProcessTransaction processTransaction = new ProcessTransaction(kafkaTemplate);
         TransactionEventDto event = record.value();
-        System.out.println("Processando transação: " + event.getTransactionId());
-        processTransaction.process(event);
+        if(event == null){
+            log.warn("Evento nulo recebido no consumidor de transação");
+            return;
+        }
+
+        log.info("Processando transação: {}", event.getTransactionId());
+
+        try{
+            processTransaction.process(event);
+        }catch (Exception ex){
+            log.error("Erro ao processar a transação: {}", event.getTransactionId(), ex);
+            throw ex;
+        }
 
 
     }

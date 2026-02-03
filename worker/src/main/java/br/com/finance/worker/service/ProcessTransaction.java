@@ -1,17 +1,19 @@
 package br.com.finance.worker.service;
 
-import br.com.finance.worker.dto.TransactionEventDto;
+import br.com.finance.events.transaction.TransactionEventDto;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 
 @Service
+@Slf4j
 public class ProcessTransaction {
 
-    private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final KafkaTemplate<String, TransactionEventDto> kafkaTemplate;
 
-    public ProcessTransaction(KafkaTemplate<String, Object> kafkaTemplate) {
+    public ProcessTransaction(KafkaTemplate<String, TransactionEventDto> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
     }
 
@@ -19,18 +21,21 @@ public class ProcessTransaction {
         System.out.println("Processando transação...");
 
         if(event.getAmount() == null || event.getAmount().compareTo(BigDecimal.ZERO) <= 0){
-            throw new RuntimeException(
-                    "Valor inválido: " + event.getAmount()
+            log.warn("Transação a ser rejeitada {}", event.getTransactionId());
+            kafkaTemplate.send(
+                    "transaction.dlq",
+                    event.getTransactionId().toString(),
+                    event
             );
+            return;
         }
-        TransactionEventDto approvedEvent = new TransactionEventDto();
-        approvedEvent.setTransactionId(event.getTransactionId());
-        approvedEvent.setUserId(event.getUserId());
-        approvedEvent.setAmount(event.getAmount());
-        approvedEvent.setStatus("APPROVED");
-        kafkaTemplate.send("transaction.requested", approvedEvent);
-        System.out.println("Transação aprovada: " + event.getTransactionId());
 
+        kafkaTemplate.send(
+                "transaction.approved",
+                event.getTransactionId().toString(),
+                event
+        );
 
+        log.info("Transação a ser aprovada {}", event.getTransactionId());
     }
 }

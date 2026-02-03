@@ -1,8 +1,8 @@
-package br.com.finance.ms_transaction.transaction.infra.kafka;
+package br.com.finance.ms_transaction.transaction.infra.kafka.consumer;
 
 import br.com.finance.ms_transaction.transaction.application.gateways.TransactionRepository;
 import br.com.finance.ms_transaction.transaction.domain.entities.transaction.Transaction;
-import br.com.finance.ms_transaction.transaction.infra.kafka.event.TransactionApprovedEvent;
+import br.com.finance.events.transaction.TransactionEventDto;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
@@ -20,10 +20,10 @@ public class TransactionApprovedConsumer {
             groupId = "ms-transaction-group",
             containerFactory = "kafkaListenerContainerFactory"
     )
-    public void consume(TransactionApprovedEvent event) {
-        System.out.println("Evento aprovado recebido: " + event.transactionId());
+    public void consume(TransactionEventDto event) {
+        System.out.println("Evento aprovado recebido: " + event.getTransactionId());
 
-        Transaction transaction = repository.findById(event.transactionId())
+        Transaction transaction = repository.findById(event.getTransactionId())
                 .orElseThrow();
 
         transaction.approve();
