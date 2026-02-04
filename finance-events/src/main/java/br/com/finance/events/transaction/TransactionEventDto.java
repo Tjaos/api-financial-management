@@ -1,7 +1,7 @@
 package br.com.finance.events.transaction;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.UUID;
 
 public class TransactionEventDto {
@@ -11,7 +11,20 @@ public class TransactionEventDto {
     private BigDecimal amount;
     private String type;    // DEPOSIT / WITHDRAW / TRANSFER / PURCHASE
     private String status;  // PENDING / APPROVED / REJECTED
-    private LocalDateTime createdAt;
+    private Instant createdAt;
+
+    public TransactionEventDto() {
+    }
+
+    public TransactionEventDto(UUID transactionId, BigDecimal amount) {
+        this.transactionId = transactionId;
+        this.amount = amount;
+    }
+    public TransactionEventDto(UUID transactionId, BigDecimal amount, String type) {
+        this.transactionId = transactionId;
+        this.amount = amount;
+        this.type = type;
+    }
 
     public UUID getTransactionId() {
         return transactionId;
@@ -53,11 +66,11 @@ public class TransactionEventDto {
         this.status = status;
     }
 
-    public LocalDateTime getCreatedAt() {
+    public Instant getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
     }
 }

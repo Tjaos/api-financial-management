@@ -3,10 +3,13 @@ package br.com.finance.ms_transaction.transaction.infra.kafka.consumer;
 import br.com.finance.ms_transaction.transaction.application.gateways.TransactionRepository;
 import br.com.finance.ms_transaction.transaction.domain.entities.transaction.Transaction;
 import br.com.finance.events.transaction.TransactionEventDto;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
 @Component
+@Slf4j
 public class TransactionApprovedConsumer {
 
     private final TransactionRepository repository;
@@ -20,18 +23,28 @@ public class TransactionApprovedConsumer {
             groupId = "ms-transaction-group",
             containerFactory = "kafkaListenerContainerFactory"
     )
-    public void consume(TransactionEventDto event) {
-        System.out.println("Evento aprovado recebido: " + event.getTransactionId());
+    public void consume(ConsumerRecord<String, TransactionEventDto> record) {
 
-        Transaction transaction = repository.findById(event.getTransactionId())
+        TransactionEventDto event = record.value();
+        if(event == null){
+            log.warn("Evento nulo recebido no consumidor de transação");
+            return;
+        }
+
+        log.info("Evento transaction.approved recebido: {}", event.getTransactionId());
+
+        Transaction transaction;
+        transaction = repository.findById(event.getTransactionId())
                 .orElseThrow();
+        try {
+            transaction.approve();
+            repository.save(transaction);
+        } catch (Exception e) {
+            log.error("Erro ao processar transação aprovada: {}", e.getMessage());
+            return;
+        }
 
-        transaction.approve();
-
-        repository.save(transaction);
-
-        System.out.println(
-                "Transação aprovada: " + transaction.getId()
-        );
+        log.info("Transação aprovada: {}", transaction.getId());
     }
+
 }

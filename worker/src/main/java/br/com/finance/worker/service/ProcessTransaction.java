@@ -18,7 +18,6 @@ public class ProcessTransaction {
     }
 
     public void process(TransactionEventDto event) {
-        System.out.println("Processando transação...");
 
         if(event.getAmount() == null || event.getAmount().compareTo(BigDecimal.ZERO) <= 0){
             log.warn("Transação a ser rejeitada {}", event.getTransactionId());
@@ -27,6 +26,7 @@ public class ProcessTransaction {
                     event.getTransactionId().toString(),
                     event
             );
+            log.info("Transação rejeitada publicada com sucesso no tópico transaction.dlq");
             return;
         }
 
@@ -34,8 +34,16 @@ public class ProcessTransaction {
                 "transaction.approved",
                 event.getTransactionId().toString(),
                 event
-        );
-
-        log.info("Transação a ser aprovada {}", event.getTransactionId());
+        )
+                        .whenComplete((result, ex) -> {
+                            if(ex != null){
+                                log.error("Falha ao publicar transação aprovada no evento", ex);
+                            } else{
+                                log.info("Transação aprovada publicada com sucesso no tópico {} na partição {} com offset {}",
+                                        result.getRecordMetadata().topic(),
+                                        result.getRecordMetadata().partition(),
+                                        result.getRecordMetadata().offset());
+                            }
+                        });
     }
 }
