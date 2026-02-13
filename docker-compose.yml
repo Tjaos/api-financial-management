@@ -63,6 +63,64 @@ services:
 
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
 
+  # -------------------------------------- microserviços --------------------------------------
+  ms-user:
+    build:
+      context: ./ms-user
+      dockerfile: Dockerfile
+    image: api-financial-ms-user:local
+    container_name: ms-user-dev
+    ports:
+      - "8081:8081"   # porta externa:interno (seu app define server.port=8081)
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/user_db
+      - SPRING_DATASOURCE_USERNAME=developer
+      - SPRING_DATASOURCE_PASSWORD=dev1234
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+      - JWT_SECRET=${JWT_SECRET}
+    depends_on:
+      - postgres
+      - kafka
+    restart: unless-stopped
+
+  ms-transaction:
+    build:
+      context: ./ms-transaction
+      dockerfile: Dockerfile
+    image: api-financial-ms-transaction:local
+    container_name: ms-transaction-dev
+    ports:
+      - "8082:8082"
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/transaction_db
+      - SPRING_DATASOURCE_USERNAME=developer
+      - SPRING_DATASOURCE_PASSWORD=dev1234
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+      - JWT_SECRET=${JWT_SECRET}
+    depends_on:
+      - postgres
+      - kafka
+    restart: unless-stopped
+
+  worker:
+    build:
+      context: ./worker
+      dockerfile: Dockerfile
+    image: api-financial-worker:local
+    container_name: worker-dev
+    ports:
+      - "8083:8083"
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+    depends_on:
+      - kafka
+    restart: unless-stopped
+
+
+
 volumes:
   postgres_data:
   pgadmin_data:

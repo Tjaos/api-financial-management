@@ -10,6 +10,7 @@ import br.com.finance.ms_user.user.infra.gateway.UserEntityMapper;
 import br.com.finance.ms_user.user.infra.gateway.UserRepositoryImpl;
 import br.com.finance.ms_user.user.infra.persistence.UserJpaRepository;
 import br.com.finance.ms_user.user.infra.security.JwtTokenService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -52,10 +53,13 @@ public class UserConfig {
         return new LoginUser(userRepository, passwordHasher, tokenService );
     }
 
+    @Value("${jwt.secret}")
+    private String jwtSecret;
+
     @Bean
     JwtTokenService jwtTokenService() {
         return new JwtTokenService(
-                "chave-secreta-exemplo-para-geracao-de-tokens-1234567890",
+                jwtSecret,
                 1000L * 60 * 60
         );
     }
