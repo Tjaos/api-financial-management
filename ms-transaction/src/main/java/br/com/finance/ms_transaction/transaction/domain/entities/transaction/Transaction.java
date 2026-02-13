@@ -26,10 +26,7 @@ public class Transaction {
             String category,
             String description
     ) {
-        TransactionStatus status = TransactionStatus.APPROVED;
-        if(type != TransactionType.DEPOSIT){
-            status = TransactionStatus.PENDING;
-        }
+        TransactionStatus status = TransactionStatus.PENDING;
         return new Transaction(
                 UUID.randomUUID(),
                 userId,
@@ -58,9 +55,9 @@ public class Transaction {
         if(id == null) throw new IllegalArgumentException("O id da transação é obrigatório.");
         if(userId == null) throw new IllegalArgumentException("O id do usuário é obrigatório");
         if(type == null) throw new IllegalArgumentException("O tipo da transação é obrigatório.");
-//        if (amount == null || amount.signum() <= 0) {
-//            throw new IllegalArgumentException("O valor da transação deve ser maior que zero.");
-//        }
+        if (amount == null || amount.signum() <= 0) {
+            throw new IllegalArgumentException("O valor da transação deve ser maior que zero.");
+        }
         if(status == null ) status = TransactionStatus.PENDING;
         if (currency == null || currency.isBlank()) currency = "BRL";
         if (category == null || category.isBlank()) throw new IllegalArgumentException("Categoria é obrigatória");

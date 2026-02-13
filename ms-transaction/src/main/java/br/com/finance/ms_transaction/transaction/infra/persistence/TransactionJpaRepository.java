@@ -1,7 +1,6 @@
 package br.com.finance.ms_transaction.transaction.infra.persistence;
 
 import br.com.finance.ms_transaction.transaction.domain.enums.TransactionStatus;
-import br.com.finance.ms_transaction.transaction.domain.enums.TransactionType;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.Instant;
