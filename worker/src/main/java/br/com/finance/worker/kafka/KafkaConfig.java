@@ -64,21 +64,6 @@ public class KafkaConfig {
         return errorHandler;
     }
 
-//    @Bean
-//    public ConcurrentKafkaListenerContainerFactory<String, TransactionEventDto>
-//    kafkaListenerContainerFactory(
-//            ConsumerFactory<String, TransactionEventDto> consumerFactory,
-//            DefaultErrorHandler errorHandler
-//    ) {
-//        ConcurrentKafkaListenerContainerFactory<String, TransactionEventDto> factory =
-//                new ConcurrentKafkaListenerContainerFactory<>();
-//
-//        factory.setConsumerFactory(consumerFactory);
-//        factory.setCommonErrorHandler(errorHandler);
-//        factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.RECORD);
-//
-//        return factory;
-//    }
     @Bean
     public NewTopic transactionDlqTopic(){
         return TopicBuilder.name("transaction.dlq")
