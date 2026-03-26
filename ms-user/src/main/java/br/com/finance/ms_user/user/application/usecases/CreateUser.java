@@ -5,6 +5,7 @@ import br.com.finance.ms_user.user.application.gateway.PasswordHasher;
 import br.com.finance.ms_user.user.application.gateway.UserRepository;
 import br.com.finance.ms_user.user.domain.entities.user.User;
 import br.com.finance.ms_user.user.domain.exceptions.InvalidPasswordSizeException;
+import org.apache.catalina.filters.ExpiresFilter;
 
 public class CreateUser {
 
